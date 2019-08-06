@@ -9,7 +9,8 @@ export async function create(req: Request, res: Response) {
   }
 
   const query = await Todo.query().insert({
-    title: req.body.title
+    title: req.body.title,
+    user: req.user.id
   } as any);
 
   res.send(query);
@@ -45,7 +46,9 @@ export async function update(req: Request, res: Response) {
     throw new BadRequestError('Invalid id');
   }
 
-  if (req.user.id !== req.params.id) {
+  const todo = await Todo.query().findById(req.params.id);
+
+  if (req.user.id !== todo.user) {
     throw new UnauthorizedError();
   }
 
@@ -71,7 +74,9 @@ export async function remove(req: Request, res: Response) {
     throw new BadRequestError('Invalid id');
   }
 
-  if (req.user.id !== req.params.id) {
+  const todo = await Todo.query().findById(req.params.id);
+
+  if (req.user.id !== todo.user) {
     throw new UnauthorizedError();
   }
 

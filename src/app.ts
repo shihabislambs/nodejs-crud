@@ -5,6 +5,7 @@ import * as express from 'express';
 import * as compress from 'compression';
 import * as process from 'process';
 import app from './server';
+import './config/passport';
 import logger from './config/log';
 import * as Environment from './config/environments';
 import { configCors } from './config/cors';
@@ -44,12 +45,20 @@ app.get('/environment', function (_req, res) {
   res.send({ environment: Environment.NODE_ENV, log_level: process.env.LOG_LEVEL });
 });
 
+import * as authController from './controllers/authenticationController';
+app.post('/login', asyncMiddleware(authController.login));
+app.get('/issue-jwt', authController.isAuthenticated, asyncMiddleware(authController.issueNewJwt));
+
 import * as todoController from './controllers/todosController';
-app.post('/api/todo', asyncMiddleware(todoController.create));
+app.post('/api/todo', authController.isAuthenticated, asyncMiddleware(todoController.create));
 app.get('/api/todo', asyncMiddleware(todoController.get));
 app.get('/api/todo/:id', asyncMiddleware(todoController.find));
-app.put('/api/todo/:id', asyncMiddleware(todoController.update));
-app.delete('/api/todo/:id', asyncMiddleware(todoController.remove));
+app.put('/api/todo/:id', authController.isAuthenticated, asyncMiddleware(todoController.update));
+app.delete('/api/todo/:id', authController.isAuthenticated, asyncMiddleware(todoController.remove));
+
+import * as userController from './controllers/userController';
+app.post('/api/user', asyncMiddleware(userController.create));
+app.get('/api/user', asyncMiddleware(userController.get));
 
 import { NotFoundError, ApplicationError } from './controllers/errorController';
 

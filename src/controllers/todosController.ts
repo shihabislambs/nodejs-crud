@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { isNumeric } from 'validator';
 import Todo from '../models/TodoModel';
-import { MissingFieldError, BadRequestError } from './errorController';
+import { MissingFieldError, BadRequestError, UnauthorizedError } from './errorController';
 
 export async function create(req: Request, res: Response) {
   if (!req.body.title) {
@@ -45,6 +45,10 @@ export async function update(req: Request, res: Response) {
     throw new BadRequestError('Invalid id');
   }
 
+  if (req.user.id !== req.params.id) {
+    throw new UnauthorizedError();
+  }
+
   const updateData = {} as any;
   if (req.body.title) {
     updateData.title = req.body.title;
@@ -65,6 +69,10 @@ export async function remove(req: Request, res: Response) {
 
   if (!isNumeric(req.params.id)) {
     throw new BadRequestError('Invalid id');
+  }
+
+  if (req.user.id !== req.params.id) {
+    throw new UnauthorizedError();
   }
 
   await Todo.query().deleteById(req.params.id);

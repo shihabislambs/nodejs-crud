@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { isNumeric } from 'validator';
 import Todo from '../models/TodoModel';
 import { MissingFieldError, BadRequestError } from './errorController';
 
@@ -27,7 +28,7 @@ export async function find(req: Request, res: Response) {
     throw new MissingFieldError('id');
   }
 
-  if (!Number.isInteger(req.params.id)) {
+  if (!isNumeric(req.params.id)) {
     throw new BadRequestError('Invalid id');
   }
 
@@ -40,7 +41,7 @@ export async function update(req: Request, res: Response) {
     throw new MissingFieldError('id');
   }
 
-  if (!Number.isInteger(req.params.id)) {
+  if (!isNumeric(req.params.id)) {
     throw new BadRequestError('Invalid id');
   }
 
@@ -62,7 +63,7 @@ export async function remove(req: Request, res: Response) {
     throw new MissingFieldError('id');
   }
 
-  if (!Number.isInteger(req.params.id)) {
+  if (!isNumeric(req.params.id)) {
     throw new BadRequestError('Invalid id');
   }
 

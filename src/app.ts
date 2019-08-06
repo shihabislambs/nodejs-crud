@@ -51,11 +51,6 @@ app.get('/api/todo/:id', asyncMiddleware(todoController.find));
 app.put('/api/todo/:id', asyncMiddleware(todoController.update));
 app.delete('/api/todo/:id', asyncMiddleware(todoController.remove));
 
-// If you are lost
-app.use(function (_req: express.Request, _res: express.Response) {
-  throw new NotFoundError();
-});
-
 import { NotFoundError, ApplicationError } from './controllers/errorController';
 
 // If you are lost
